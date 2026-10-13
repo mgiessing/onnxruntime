@@ -538,7 +538,7 @@ TEST(MatMulNBits, Float32_4b_Accuracy4_ForceFp32DynamicMetadata) {
 #endif
 }
 
-#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_ARM64)
+#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_ARM64) || defined(MLAS_TARGET_POWER)
 #if !defined(USE_DML)
 // Actual and expected difference is over 0.01 with DmlExecutionProvider.
 // Skip the tests instead of raising the tolerance to make is pass.
