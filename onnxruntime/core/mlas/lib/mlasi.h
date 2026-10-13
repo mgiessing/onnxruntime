@@ -1683,6 +1683,10 @@ extern const MLAS_QNBIT_GEMM_DISPATCH MlasSQNBitGemmDispatchLasx;
 
 extern const MLAS_QNBIT_GEMM_DISPATCH MlasSQNBitGemmDispatchRvv;
 
+#if defined(MLAS_TARGET_POWER)
+extern const MLAS_QNBIT_GEMM_DISPATCH MlasSQNBitGemmDispatchPOWER10;
+#endif
+
 struct MLAS_QNBIT_LUT_GEMM_DISPATCH;
 
 extern const MLAS_QNBIT_LUT_GEMM_DISPATCH MlasLutGenKernelAvx2;

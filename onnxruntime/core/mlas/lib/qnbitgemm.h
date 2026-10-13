@@ -75,6 +75,9 @@ struct PackedQuantBDataStruct {
 #if defined(MLAS_TARGET_AMD64_IX86)
         // avx512 requires alignment on a 64-byte boundary
         PackedQuantBData = (std::byte*)MlasAlignAddress(PackedQuantBWorkspace, 64);
+#elif defined(MLAS_TARGET_POWER)
+        // Align to the POWER cache line size. The POWER10 pack-size function reserves the slack.
+        PackedQuantBData = (std::byte*)MlasAlignAddress(PackedQuantBWorkspace, 128);
 #elif defined (MLAS_TARGET_ARM64)
         // Only for 8-bit Gemms is the `PackedQuantBData` is to be 32-byte aligned and
         // there is enough memory allocated to support this alignment.

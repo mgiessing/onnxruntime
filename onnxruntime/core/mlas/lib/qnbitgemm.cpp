@@ -901,7 +901,7 @@ SQ4BitGemm_CompInt8(
 {
     MLAS_UNREFERENCED_PARAMETER(BackendKernelSelectorConfig);
 
-#ifdef MLAS_TARGET_AMD64_IX86
+#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_POWER)
     PerGemmQuantAWorkspace* const per_gemm_quant_a_workspace = static_cast<PerGemmQuantAWorkspace*>(PerGemmWorkspace);
     constexpr size_t BlkBitWidth = 4;
 
@@ -993,7 +993,7 @@ SQ4BitGemm_CompInt8(
                 RowsRemaining -= RowsHandled;
             }
         }
-#ifdef MLAS_TARGET_AMD64_IX86
+#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_POWER)
         else if (GetMlasPlatform().QNBitGemmDispatch->SQ4BitGemmKernel_BlkSum_CompInt8 != nullptr)
         {
             const float* b_blk_sum = QuantBBlkSum + n * k_blks;

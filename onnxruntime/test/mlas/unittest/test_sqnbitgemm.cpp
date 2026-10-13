@@ -98,7 +98,7 @@ class MlasSQNBitGemmTest : public MlasTestBase {
       param.Bias = Bias;
       param.C = C + batch * M * ldc;
       param.ldc = ldc;
-#ifdef MLAS_TARGET_AMD64_IX86
+#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_POWER)
       if (ComputeType == SQNBIT_CompInt8) {
         param.QuantBDataWorkspace = PackedQuantBDataWorkspace;
       }
@@ -677,6 +677,14 @@ class SQNBitGemmShortExecuteTest : public MlasTestFixture<MlasSQNBitGemmTest<Blk
           tests_registered += RegisterSingleTest(1, 527, 2131, ComputeType, WithThreadpool, Symmetric, true);
           tests_registered += RegisterSingleTest(11, 527, 2131, ComputeType, WithThreadpool, Symmetric, true);
           // tests_registered += RegisterSingleTest(1001, 1027, 1031, ComputeType, WithThreadpool, Symmetric, false);
+
+          // Non-square shapes around common kernel tile edges (4/8 rows, 4/16 columns), with K not a
+          // multiple of BlkLen.
+          for (const size_t M : {2, 3, 5, 7, 9, 12}) {
+            for (const size_t N : {3, 4, 5, 17, 33}) {
+              tests_registered += RegisterSingleTest(M, N, 2 * BlkLen + 3, ComputeType, WithThreadpool, Symmetric, true);
+            }
+          }
 
           // B-packing chunk-boundary coverage: MLAS_PACK_BLKS_PER_CHUNK is 64, so the
           // subblock-count-based chunking in PackQuantB/Q8PackQuantB (and the matching

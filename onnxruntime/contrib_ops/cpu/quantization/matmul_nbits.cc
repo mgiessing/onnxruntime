@@ -511,7 +511,7 @@ Status MatMulNBits<T1>::PrePack(const Tensor& tensor, int input_idx, /*out*/ All
       // call with QuantBData == nullptr to finalize it. This is byte-identical to the staged
       // scales + zero_points packing it replaces.
       bool finalize_scale_zp_into_packed_b = effective_compute_type == SQNBIT_CompInt8 && scale_ptr != nullptr;
-#if !defined(MLAS_TARGET_AMD64_IX86)
+#if !defined(MLAS_TARGET_AMD64_IX86) && !defined(MLAS_TARGET_POWER)
       // On ARM64 the scales/zero points are folded into B only for 8-bit, or for 4-bit when MLAS bakes
       // them in (KleidiAI). For 4-bit non-KleidiAI they are applied at compute time and must not be
       // passed to the packing routine, which would dereference the null QuantBData buffer.
@@ -542,7 +542,7 @@ Status MatMulNBits<T1>::PrePack(const Tensor& tensor, int input_idx, /*out*/ All
     // bytes), so the LUT compute path would then read garbage. prefer_lut_gemm_
     // is gated to T1==float (see ctor), so checking it here is sufficient.
     bool should_pack_scale_and_zp_inputs = [&]() {
-#if defined(MLAS_TARGET_AMD64_IX86)
+#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_POWER)
       return true;
 #else
       // W2 on ARM64 (NEON DotProd) uses the same 3-call prepack pattern as
@@ -824,7 +824,7 @@ Status MatMulNBits<MLFloat16>::PrePack(const Tensor& tensor, int input_idx, /*ou
     // call with QuantBData == nullptr to finalize it. This is byte-identical to the staged
     // scales + zero_points packing it replaces.
     bool finalize_scale_zp_into_packed_b = effective_compute_type == SQNBIT_CompInt8 && scales_fp32_ != nullptr;
-#if !defined(MLAS_TARGET_AMD64_IX86)
+#if !defined(MLAS_TARGET_AMD64_IX86) && !defined(MLAS_TARGET_POWER)
     // On ARM64 the scales/zero points are folded into B only for 8-bit, or for 4-bit when MLAS bakes
     // them in (KleidiAI). For 4-bit non-KleidiAI they are applied at compute time and must not be
     // passed to the packing routine, which would dereference the null QuantBData buffer.
@@ -847,7 +847,7 @@ Status MatMulNBits<MLFloat16>::PrePack(const Tensor& tensor, int input_idx, /*ou
     }
   } else if (compute_type_ == SQNBIT_CompInt8) {
     bool should_pack_scale_and_zp = [&]() {
-#if defined(MLAS_TARGET_AMD64_IX86)
+#if defined(MLAS_TARGET_AMD64_IX86) || defined(MLAS_TARGET_POWER)
       return true;
 #else
       return (nbits_ == 2 || nbits_ == 8);

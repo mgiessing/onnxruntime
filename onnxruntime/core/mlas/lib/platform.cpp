@@ -994,6 +994,7 @@ Return Value:
         this->GemmFloatKernel = MlasSgemmKernelPOWER10;
         this->GemmDoubleKernel = MlasDgemmKernelPOWER10;
         this->GemmU8X8Dispatch = &MlasGemm8X8DispatchPOWER10;
+        this->QNBitGemmDispatch = &MlasSQNBitGemmDispatchPOWER10;
     }
 #endif
 #endif
